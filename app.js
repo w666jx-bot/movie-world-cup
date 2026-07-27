@@ -375,79 +375,104 @@ function renderTopbar() {
 function tplHome() {
   return `
     <section class="screen home">
+      <button class="lang-switch" type="button" aria-label="Language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13.5 13.5 0 0 1 3.5 9 13.5 13.5 0 0 1-3.5 9 13.5 13.5 0 0 1-3.5-9A13.5 13.5 0 0 1 12 3z"></path></svg>
+        <span>简体中文</span>
+      </button>
+      <a class="rank-fab" href="#about" aria-label="玩法说明">🎬<span>玩法</span></a>
       <div class="hero">
         <h1 class="logo-lockup" aria-label="MOVIE CUP">
           <span class="logo-badge" aria-hidden="true">🎬</span>
-          <span class="logo-movie" aria-hidden="true">MOVIE</span>
+          <span class="logo-movie" aria-hidden="true"><i>M</i><i>O</i><i>V</i><i>I</i><i>E</i></span>
           <span class="logo-cup" aria-hidden="true">CUP</span>
         </h1>
-        <p class="slogan">决战电影之巅</p>
-        <p class="tagline">给你的片单办一场世界杯，先分组，再捞遗珠，最后一路投到冠军。</p>
+        <h2 class="slogan">决战电影之巅</h2>
+        <p class="tagline">给你的本命电影，办一场世界杯</p>
       </div>
 
-      <div class="home-shell">
-        <div class="home-switch" role="tablist" aria-label="片单来源">
-          ${HOME_SOURCE_MODES.map((mode) => `
-            <button class="home-switch-btn ${ui.homeSource === mode.id ? "active" : ""}" data-act="set-home-source" data-source="${mode.id}" type="button">
-              ${mode.label}
-            </button>
-          `).join("")}
-        </div>
+      ${ui.homeSource === "recommend" ? tplRecommendHome() : tplCustomHome()}
 
-        <div class="size-row">
-          <span class="size-label">赛事规模</span>
-          <div class="size-pills" role="tablist" aria-label="赛事规模">
-            ${HOME_SIZE_OPTIONS.map((size) => `
-              <button class="size-pill ${ui.homeSize === size ? "active" : ""}" data-act="set-home-size" data-size="${size}" type="button">${size} 强</button>
+      <div class="mode-pick" role="group" aria-label="片单模式">
+        <button class="mode-btn ${ui.homeSource === "recommend" ? "on" : ""}" data-act="set-home-source" data-source="recommend" type="button" aria-pressed="${ui.homeSource === "recommend"}">推荐片单</button>
+        <button class="mode-btn ${ui.homeSource === "custom" ? "on" : ""}" data-act="set-home-source" data-source="custom" type="button" aria-pressed="${ui.homeSource === "custom"}">自选片单</button>
+        <button class="mode-btn" data-act="start-default" type="button" aria-pressed="false">内置片单</button>
+      </div>
+
+      ${ui.homeSource === "recommend" ? `
+        <div class="chips-wrap">
+          <p class="chips-label">一键开赛</p>
+          <div class="chips">
+            ${(ui.suggestions || []).slice(0, 6).map((item) => `
+              <button class="chip" data-act="chip" data-value="${escapeHtml(item)}" type="button">${escapeHtml(item)}</button>
             `).join("")}
           </div>
         </div>
+      ` : ""}
 
-        ${ui.homeSource === "recommend" ? tplRecommendHome() : tplCustomHome()}
-      </div>
-
-      <p class="credit">${emptyStateFlowText()}</p>
+      <p class="home-foot">小组赛 → 遗珠复活 → 淘汰赛，选出你的本命电影</p>
     </section>
+    <section class="home-seo" id="about">
+      <h2>为你的本命电影，办一场电影世界杯</h2>
+      <p>Movie World Cup 是一个免费的电影世界杯生成器：按导演、地区或类型拉出一组候选片单，逐轮筛选出你心中的第一名。打开网页就能玩，不用注册，也不用下载。</p>
+      <h3>玩法介绍</h3>
+      <ol>
+        <li>选择片单来源：推荐片单、自选片单、内置片单三种入口。</li>
+        <li>确定赛制：支持 8 / 16 / 24 / 32 / 40 / 48 部电影开赛。</li>
+        <li>逐轮晋级：小组赛 4 选 2、遗珠复活赛捞回可惜出局的电影、淘汰赛 1v1 决出冠军。</li>
+        <li>生成分享图：冠军诞生后自动画出晋级之路，可以保存分享。</li>
+      </ol>
+      <h3>常见问题</h3>
+      <div class="faq-item"><h4>Movie World Cup 是什么？</h4><p>一个免费的在线电影世界杯游戏：从片单里生成对决签表，逐轮选择，最后选出你的本命电影。</p></div>
+      <div class="faq-item"><h4>怎么开赛？</h4><p>首页先选片单来源；推荐片单支持按导演、地区、类型搜索，自选片单支持豆瓣链接、subject ID、片名或 JSON 导入。</p></div>
+      <div class="faq-item"><h4>比赛赛制是什么？</h4><p>大曲库走完整赛制：小组赛、遗珠复活赛、淘汰赛；小曲库则直接进入淘汰赛。</p></div>
+      <div class="faq-item"><h4>需要注册或付费吗？</h4><p>不需要。比赛进度会自动保存在浏览器本地，冠军诞生后可以导出分享图。</p></div>
+      <h3 class="official-head">关于 Movie World Cup</h3>
+      <p>这是一个个人项目，灵感来自 MUSIC CUP 的歌曲世界杯体验。当前公开版本托管在 GitHub Pages，推荐片单与豆瓣导入能力通过独立 API 提供支持。</p>
+      <p class="official-links">
+        <a href="https://w666jx-bot.github.io/movie-world-cup/" target="_blank" rel="noopener">公开站点</a>
+        <a href="https://github.com/w666jx-bot/movie-world-cup" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a href="https://movie-world-cup-api.vercel.app/api/health" target="_blank" rel="noopener">API Health</a>
+      </p>
+    </section>
+    <nav class="lang-links" aria-label="Language">
+      <p class="lang-links-title">Language</p>
+      <div class="lang-links-list">
+        <a class="lang-link on" href="#top" aria-current="page">简体中文</a>
+        <a class="lang-link" href="#top">English</a>
+        <a class="lang-link" href="#top">日本語</a>
+        <a class="lang-link" href="#top">한국어</a>
+        <a class="lang-link" href="#top">Français</a>
+        <a class="lang-link" href="#top">Deutsch</a>
+      </div>
+    </nav>
   `;
 }
 
 function tplRecommendHome() {
   return `
-    <div class="home-panel search-panel">
-      <div class="mode-row">
+    <div class="searchbox">
+      <div class="search-field">
+        ${ICONS.search}
+        <input id="home-search" type="search" value="${escapeHtml(ui.query)}" placeholder="${MODE_PLACEHOLDERS[ui.recommendMode]}" autocomplete="off" enterkeyhint="search">
+      </div>
+      <div class="sug" id="sug">${tplSuggestions()}</div>
+    </div>
+    <div class="mode-row mode-row-home">
         ${RECOMMEND_MODES.map((mode) => `
           <button class="mode-pill ${ui.recommendMode === mode.id ? "active" : ""}" data-act="set-mode" data-mode="${mode.id}" type="button">
             ${mode.label}
           </button>
         `).join("")}
       </div>
-
-      <div class="searchbox">
-        <div class="search-field">
-          ${ICONS.search}
-          <input id="home-search" type="search" value="${escapeHtml(ui.query)}" placeholder="${MODE_PLACEHOLDERS[ui.recommendMode]}" autocomplete="off" enterkeyhint="search">
-          <button class="ghost-btn sm" data-act="search-submit" type="button">开始</button>
-        </div>
-        <div class="sug" id="sug">${tplSuggestions()}</div>
-      </div>
-
-      <div class="chips-wrap">
-        <p class="chips-label">QUICK START</p>
-        <div class="chips">
-          ${(ui.suggestions || []).slice(0, 6).map((item) => `
-            <button class="chip" data-act="chip" data-value="${escapeHtml(item)}" type="button">${escapeHtml(item)}</button>
+      <div class="size-row">
+        <span class="size-label">赛事规模</span>
+        <div class="size-pills" role="tablist" aria-label="赛事规模">
+          ${HOME_SIZE_OPTIONS.map((size) => `
+            <button class="size-pill ${ui.homeSize === size ? "active" : ""}" data-act="set-home-size" data-size="${size}" type="button">${size} 强</button>
           `).join("")}
         </div>
       </div>
-
-      <div class="panel-foot">
-        <p class="helper">按${MODE_LABELS[ui.recommendMode]}从豆瓣拉出 ${ui.homeSize} 部电影，然后直接进入世界杯赛程。</p>
-        <div class="hero-actions">
-          <button class="btn" data-act="search-submit" type="button">生成 ${ui.homeSize} 强</button>
-          <button class="ghost-btn" data-act="start-default" type="button">内置 32 强</button>
-        </div>
-      </div>
-    </div>
+      <p class="helper home-helper">按${MODE_LABELS[ui.recommendMode]}从豆瓣拉出 ${ui.homeSize} 部电影，然后直接进入世界杯赛程。</p>
   `;
 }
 
@@ -468,7 +493,7 @@ function tplCustomHome() {
     <div class="home-panel custom-panel">
       <div class="setup-head">
         <h3>自选电影片单</h3>
-        <p class="setup-note">像原站一样，从你自己的片单直接开赛。文本导入支持自动识别赛事规模。</p>
+        <p class="setup-note">从你自己的片单直接开赛。文本导入支持自动识别赛事规模。</p>
       </div>
       <div class="setup-actions">
         <label class="file-btn" for="roster-file">读文件</label>

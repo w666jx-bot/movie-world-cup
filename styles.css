@@ -265,13 +265,48 @@ img {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  justify-content: center;
+  gap: 18px;
+  justify-content: flex-start;
+  position: relative;
+  width: min(100%, 560px);
+}
+
+.lang-switch,
+.rank-fab {
+  position: fixed;
+  top: max(20px, calc(env(safe-area-inset-top) + 16px));
+  z-index: 5;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--txt);
+  box-shadow: 0 12px 26px -18px rgba(0, 0, 0, 0.72);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.lang-switch {
+  left: max(20px, calc(50% - 260px));
+}
+
+.lang-switch svg {
+  width: 15px;
+  height: 15px;
+}
+
+.rank-fab {
+  right: max(20px, calc(50% - 260px));
 }
 
 .hero {
   text-align: center;
-  margin-bottom: 4px;
+  padding-top: 74px;
 }
 
 .logo-lockup {
@@ -279,31 +314,42 @@ img {
   align-items: center;
   gap: 10px;
   margin: 0;
-  font-size: clamp(40px, 10vw, 68px);
+  font-size: clamp(42px, 9vw, 72px);
   font-weight: 800;
   line-height: 0.92;
-  letter-spacing: 0;
 }
 
 .logo-badge {
   display: inline-grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 56px;
+  height: 56px;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255, 122, 24, 0.26), rgba(255, 61, 129, 0.3));
-  box-shadow: 0 16px 34px rgba(255, 61, 129, 0.18);
+  background: linear-gradient(135deg, rgba(255, 122, 24, 0.28), rgba(255, 61, 129, 0.3));
+  box-shadow: 0 16px 32px rgba(255, 61, 129, 0.16);
   font-size: 28px;
+  animation: badge-float 5s ease-in-out infinite;
+}
+
+@keyframes badge-float {
+  50% {
+    transform: translateY(-6px) rotate(-3deg);
+  }
 }
 
 .logo-movie,
 .logo-cup {
   display: inline-flex;
-  gap: 2px;
+  align-items: center;
 }
 
 .logo-movie {
-  color: #ffffff;
+  gap: 1px;
+  color: #fff;
+}
+
+.logo-movie i {
+  font-style: normal;
 }
 
 .logo-cup {
@@ -315,8 +361,8 @@ img {
 
 .slogan {
   margin: 12px 0 0;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.1;
 }
 
 .tagline {
@@ -324,11 +370,7 @@ img {
   max-width: 420px;
   color: var(--dim);
   line-height: 1.6;
-}
-
-.home-shell {
-  display: grid;
-  gap: 14px;
+  font-size: 15px;
 }
 
 .home-switch,
@@ -341,11 +383,6 @@ img {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.home-switch {
-  width: fit-content;
-  margin: 0 auto;
 }
 
 .home-switch-btn,
@@ -388,10 +425,6 @@ img {
   backdrop-filter: blur(18px);
 }
 
-.search-panel {
-  gap: 18px;
-}
-
 .panel-foot {
   display: grid;
   gap: 12px;
@@ -417,20 +450,34 @@ img {
 }
 
 .mode-pill,
+.mode-btn,
 .chip {
   padding: 0 14px;
   min-height: 38px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--txt);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 .mode-pill.active,
+.mode-btn.on,
 .chip.active {
   background: linear-gradient(135deg, rgba(255, 122, 24, 0.18), rgba(255, 61, 129, 0.22));
   border-color: rgba(255, 122, 24, 0.26);
   box-shadow: 0 10px 24px rgba(255, 122, 24, 0.16);
+}
+
+.mode-pick {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mode-row-home {
+  justify-content: center;
 }
 
 .searchbox,
@@ -451,6 +498,8 @@ img {
 
 .searchbox {
   overflow: hidden;
+  position: relative;
+  background: var(--panel);
 }
 
 .search-field {
@@ -459,6 +508,7 @@ img {
   gap: 12px;
   padding: 0 16px;
   min-height: 58px;
+  background: var(--panel-2);
 }
 
 .search-field input {
@@ -549,13 +599,14 @@ img {
 .chips-wrap {
   display: grid;
   gap: 10px;
+  text-align: center;
 }
 
 .chips-label {
   margin: 0;
   font-size: 12px;
   color: var(--dim-2);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
 }
 
 .btn,
@@ -605,6 +656,107 @@ img {
 
 .hero-actions {
   justify-content: center;
+}
+
+.home-foot {
+  text-align: center;
+  font-size: 12px;
+  color: var(--dim-2);
+}
+
+.home-seo {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 8px 16px 8px;
+  display: grid;
+  gap: 14px;
+  color: var(--dim);
+}
+
+.home-seo h2,
+.home-seo h3,
+.home-seo h4 {
+  margin: 0;
+  color: var(--txt);
+}
+
+.home-seo h2 {
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+.home-seo h3 {
+  font-size: 15px;
+}
+
+.home-seo h4 {
+  font-size: 13px;
+}
+
+.home-seo p,
+.home-seo .faq-item {
+  margin: 0;
+}
+
+.home-seo ol {
+  margin: 0;
+  padding-left: 1.35em;
+  display: grid;
+  gap: 8px;
+}
+
+.home-seo ol li::marker {
+  color: var(--acc-1);
+  font-weight: 700;
+}
+
+.home-seo a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.home-seo a:hover {
+  color: var(--txt);
+}
+
+.official-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+}
+
+.official-links a {
+  font-size: 12px;
+  color: var(--dim-2);
+}
+
+.lang-links {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 8px 16px 36px;
+}
+
+.lang-links-title {
+  margin: 0 0 10px;
+  color: var(--dim-2);
+  font-size: 12px;
+}
+
+.lang-links-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.lang-link {
+  color: var(--dim-2);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.lang-link.on,
+.lang-link:hover {
+  color: var(--txt);
 }
 
 .setup-panel {
@@ -1210,6 +1362,19 @@ img {
     display: none;
   }
 
+  .lang-switch,
+  .rank-fab {
+    top: calc(env(safe-area-inset-top) + 14px);
+  }
+
+  .lang-switch {
+    left: 12px;
+  }
+
+  .rank-fab {
+    right: 12px;
+  }
+
   .topbar {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
     gap: 10px;
@@ -1232,18 +1397,28 @@ img {
     font-size: 10px;
   }
 
-  .home-switch,
-  .size-pills {
+  .size-pills,
+  .mode-pick,
+  .mode-row-home {
     width: 100%;
     justify-content: center;
   }
 
-  .home-switch-btn,
-  .size-pill {
+  .mode-btn,
+  .size-pill,
+  .mode-pill {
     flex: 1 1 auto;
     min-width: 0;
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .logo-lockup {
+    font-size: 44px;
+  }
+
+  .slogan {
+    font-size: 24px;
   }
 
   .group-grid,
@@ -1324,7 +1499,7 @@ img {
   }
 
   .home {
-    width: min(100%, 760px);
+    width: min(100%, 560px);
   }
 
   .pick-grid,
