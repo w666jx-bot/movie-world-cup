@@ -1,6 +1,5 @@
 const STORAGE_KEY = "movie-world-cup-v6";
 const API_BASE_STORAGE_KEY = "movie-world-cup-api-base";
-const PUBLIC_API_BASE = "https://movie-world-cup-api.vercel.app";
 const GROUP_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const LOCAL_PROXY_PORTS = [8765, 8766, 8767];
 const TOURNAMENT_SIZES = [
@@ -97,7 +96,7 @@ const ui = {
   rosterInput: "",
   importStatus: {
     tone: "neutral",
-    text: "公开静态版可直接使用内置片单、文本自选和 JSON 导入；豆瓣推荐和豆瓣片单识别需要额外 API。"
+    text: "推荐和豆瓣导入需要通过本地 server 打开页面；内置片单和 JSON 导入可直接使用。"
   },
   loadingLabel: "",
   suggestionsLoading: false,
@@ -2027,11 +2026,11 @@ function escapeHtml(text) {
 
 async function bootstrapProxy() {
   if (await ensureApiReady()) {
-    const label = ui.apiBase ? ui.apiBase : "当前页面同源 API";
-    setImportStatus("success", `已连接电影数据 API：${label}。首页推荐和豆瓣片单识别已可用。`);
+    const label = ui.apiBase ? ui.apiBase : "当前页面同源代理";
+    setImportStatus("success", `已连接本地代理：${label}。首页推荐和豆瓣片单导入已可用。`);
     return;
   }
-  setImportStatus("neutral", "当前运行在纯静态模式：内置片单、文本自选和 JSON 导入可直接使用；如需豆瓣推荐或豆瓣片单识别，可额外连接 API。");
+  setImportStatus("neutral", "推荐和豆瓣导入需要本地代理。执行 node server.js 后，页面会自动连接 8765 / 8766 / 8767。");
 }
 
 async function ensureApiReady() {
@@ -2107,7 +2106,7 @@ function inferInitialApiBase() {
     }
     return queryBase;
   }
-  return sanitizeApiBase(readStoredApiBase()) || PUBLIC_API_BASE;
+  return sanitizeApiBase(readStoredApiBase());
 }
 
 function readStoredApiBase() {
