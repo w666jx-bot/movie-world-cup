@@ -30,7 +30,11 @@ The site URL will be:
 
 This public build is fully usable as a static site.
 
-If you also deploy a compatible API for Douban recommendation/import endpoints, you can connect it with:
+The public API is already deployed here:
+
+- `https://movie-world-cup-api.vercel.app`
+
+If you want to override it with another compatible API for Douban recommendation/import endpoints, you can connect it with:
 
 - `?apiBase=https://your-api.example.com`
 

@@ -1,5 +1,6 @@
 const STORAGE_KEY = "movie-world-cup-v6";
 const API_BASE_STORAGE_KEY = "movie-world-cup-api-base";
+const PUBLIC_API_BASE = "https://movie-world-cup-api.vercel.app";
 const GROUP_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const LOCAL_PROXY_PORTS = [8765, 8766, 8767];
 const TOURNAMENT_SIZES = [
@@ -2106,7 +2107,7 @@ function inferInitialApiBase() {
     }
     return queryBase;
   }
-  return sanitizeApiBase(readStoredApiBase());
+  return sanitizeApiBase(readStoredApiBase()) || PUBLIC_API_BASE;
 }
 
 function readStoredApiBase() {
