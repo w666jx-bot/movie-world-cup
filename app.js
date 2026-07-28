@@ -602,6 +602,7 @@ function tplGroup() {
                 ${posterImage(movie)}
                 <div class="art-fade"></div>
                 <div class="card-topline">
+                  <span class="slot-chip">${index + 1}</span>
                   <span class="rating-chip">豆瓣 ${formatRating(movie.rating)}</span>
                 </div>
                 <div class="check">✓</div>
@@ -609,6 +610,7 @@ function tplGroup() {
               <div class="meta">
                 <div class="tname">${escapeHtml(movie.title)}</div>
                 <div class="talbum">${movieMeta(movie)}</div>
+                <div class="card-note">${escapeHtml(movie.vibe || `${movie.director} · ${movie.genre}`)}</div>
                 <div class="card-tags">
                   ${selectionTags(movie)}
                 </div>
@@ -650,6 +652,7 @@ function tplWildcard() {
               <div class="meta meta-compact">
                 <div class="wname">${escapeHtml(movie.title)}</div>
                 <div class="talbum">${movieMeta(movie)}</div>
+                <div class="card-note">${escapeHtml(movie.vibe || `${movie.director} · ${movie.genre}`)}</div>
                 <div class="card-tags">
                   ${selectionTags(movie)}
                 </div>
