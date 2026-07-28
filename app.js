@@ -348,26 +348,19 @@ function render() {
 function renderTopbar() {
   if (!state || ui.view === "loading") {
     elements.topbar.hidden = true;
-    elements.topbar.innerHTML = "";
     return;
   }
 
-  const backLabel = backButtonLabel();
   elements.topbar.hidden = false;
   elements.topbar.innerHTML = `
-    <div class="tb-side tb-side-left">
-      <button class="tb-btn tb-back" data-act="undo" type="button" aria-label="${escapeHtml(backLabel)}" title="${escapeHtml(backLabel)}">
-        ${ICONS.undo}
-        <span class="sr-only">${escapeHtml(backLabel)}</span>
-      </button>
-    </div>
+    <button class="tb-btn" data-act="undo" type="button" aria-label="${escapeHtml(backButtonLabel())}">
+      ${ICONS.undo}
+    </button>
     <div class="tb-mid">
       <span class="tb-artist">${escapeHtml(state.sourceLabel)}</span>
       <span class="tb-phase">${escapeHtml(phaseLabel())}</span>
     </div>
-    <div class="tb-side tb-side-right">
-      <button class="tb-btn" data-act="restart-ask" type="button" aria-label="重新开始" title="重新开始">${ICONS.restart}</button>
-    </div>
+    <button class="tb-btn" data-act="restart-ask" type="button" aria-label="重新开始">${ICONS.restart}</button>
     <div class="tb-prog"><i style="width:${progress()}%"></i></div>
   `;
 }
@@ -545,12 +538,10 @@ function tplSuggestions() {
 function tplLoading() {
   return `
     <section class="screen loading">
-      <div class="loading-shell">
-        <div class="spinner" aria-hidden="true"></div>
-        <div>
-          <div class="loading-artist">${escapeHtml(ui.loadingLabel || "电影世界杯")}</div>
-          <p class="loading-tip" id="loading-tip">${LOADING_TIPS[0]}</p>
-        </div>
+      <div class="spinner" aria-hidden="true"><span class="note">🎬</span></div>
+      <div>
+        <div class="loading-artist">${escapeHtml(ui.loadingLabel || "电影世界杯")}</div>
+        <p class="loading-tip" id="loading-tip">${LOADING_TIPS[0]}</p>
       </div>
     </section>
   `;
@@ -566,12 +557,12 @@ function tplDraw() {
       </div>
       <div class="stat-row">
         <div class="stat"><b>${state.size.n}</b><span>参赛电影</span></div>
-        <div class="stat"><b>${state.size.groups}</b><span>小组</span></div>
-        <div class="stat"><b>${state.size.bracket}</b><span>淘汰席位</span></div>
+        <div class="stat"><b>${state.size.groups}</b><span>个小组</span></div>
+        <div class="stat"><b>${state.size.bracket}</b><span>强席位</span></div>
       </div>
       <div class="group-grid">
         ${state.groups.map((group, groupIndex) => `
-          <div class="gcard">
+          <div class="gcard" style="animation-delay:${Math.min(groupIndex * 55, 600)}ms">
             <div class="gcard-head"><b>${groupLabel(groupIndex)}</b><span>GROUP</span></div>
             ${group.map((movieId) => {
               const movie = getMovie(movieId);
@@ -586,7 +577,7 @@ function tplDraw() {
         `).join("")}
       </div>
       <div class="cta-bar">
-        <button class="btn" data-act="start-group" type="button">开始小组赛</button>
+        <button class="btn primary" data-act="start-group" type="button">开始小组赛</button>
       </div>
     </section>
   `;
@@ -598,30 +589,29 @@ function tplGroup() {
     <section class="screen with-topbar with-cta">
       <div class="phase-head">
         <span class="pill">小组赛 · GROUP STAGE</span>
-        <h2><span class="grad-text">${groupLabel(state.gi)}</span> 组</h2>
+        <h2><span class="grad-text en">${groupLabel(state.gi)}</span> 组</h2>
         <p class="sub">${groupSubtitle()}</p>
         <p class="count">${state.gi + 1} / ${state.size.groups}</p>
       </div>
       <div class="pick-grid">
-        ${group.map((movieId) => {
+        ${group.map((movieId, index) => {
           const movie = getMovie(movieId);
           return `
-            <article class="scard ${state.sel.includes(movieId) ? "picked" : ""}" data-act="toggle-pick" data-movie-id="${movieId}" role="button" tabindex="0">
+            <article class="scard ${state.sel.includes(movieId) ? "picked" : ""}" data-act="toggle-pick" data-movie-id="${movieId}" role="button" tabindex="0" style="animation-delay:${index * 70}ms">
               <div class="art">
                 ${posterImage(movie)}
                 <div class="check">✓</div>
               </div>
               <div class="meta">
                 <div class="tname">${escapeHtml(movie.title)}</div>
-                <div class="talbum">${escapeHtml(movie.director)} · ${movie.year} · ${escapeHtml(movie.region)}</div>
-                <div class="movie-extra">${escapeHtml(movie.genre)} · 评分 ${movie.rating}</div>
+                <div class="talbum">${movieMeta(movie)}</div>
               </div>
             </article>
           `;
         }).join("")}
       </div>
       <div class="cta-bar">
-        <button class="btn" data-act="confirm-group" type="button" ${state.sel.length === 2 ? "" : "disabled"}>${groupConfirmLabel()}</button>
+        <button class="btn primary" data-act="confirm-group" type="button" ${state.sel.length === 2 ? "" : "disabled"}>${groupConfirmLabel()}</button>
       </div>
     </section>
   `;
@@ -637,25 +627,22 @@ function tplWildcard() {
         <p class="sub">${wildcardSubtitle()}</p>
       </div>
       <div class="wild-grid">
-        ${leftovers.map(({ movieId, groupIndex }) => {
+        ${leftovers.map(({ movieId, groupIndex }, index) => {
           const movie = getMovie(movieId);
           return `
-            <article class="wcard ${state.sel.includes(movieId) ? "picked" : ""}" data-act="toggle-wild" data-movie-id="${movieId}" role="button" tabindex="0">
+            <article class="wcard ${state.sel.includes(movieId) ? "picked" : ""}" data-act="toggle-wild" data-movie-id="${movieId}" role="button" tabindex="0" style="animation-delay:${Math.min(index * 30, 500)}ms">
               <div class="art">
                 ${posterImage(movie)}
                 <span class="gbadge">${groupLabel(groupIndex)}</span>
                 <div class="check">✓</div>
               </div>
-              <div class="meta">
-                <div class="wname">${escapeHtml(movie.title)}</div>
-                <div class="movie-extra">${escapeHtml(movie.director)} · ${movie.year} · ${escapeHtml(movie.genre)}</div>
-              </div>
+              <div class="wname">${escapeHtml(movie.title)}</div>
             </article>
           `;
         }).join("")}
       </div>
       <div class="cta-bar">
-        <button class="btn" data-act="confirm-wild" type="button" ${state.sel.length === state.size.wild ? "" : "disabled"}>
+        <button class="btn primary" data-act="confirm-wild" type="button" ${state.sel.length === state.size.wild ? "" : "disabled"}>
           ${state.sel.length === state.size.wild ? "名单齐了，开启淘汰赛" : `已复活 ${state.sel.length} / ${state.size.wild}`}
         </button>
       </div>
@@ -666,12 +653,13 @@ function tplWildcard() {
 function tplKnockout() {
   const round = state.rounds[state.ri];
   const match = round[state.mi];
+  const isFinal = state.ri === state.rounds.length - 1;
   return `
-    <section class="screen with-topbar">
+    <section class="screen with-topbar duel-screen">
       <div class="duel-wrap">
         <div class="phase-head">
-          <span class="pill">${escapeHtml(roundName(state.ri))} · KNOCKOUT</span>
-          <h2>${state.ri === state.rounds.length - 1 ? "冠军之战" : `第 ${state.mi + 1} 场`}</h2>
+          <span class="pill">${escapeHtml(roundName(state.ri))} · ${isFinal ? "FINAL" : "KNOCKOUT"}</span>
+          <h2>${isFinal ? "冠军之战" : `第 ${state.mi + 1} 场`}</h2>
           <p class="count">${state.mi + 1} / ${round.length}</p>
         </div>
         <div class="duel">
@@ -681,6 +669,7 @@ function tplKnockout() {
         </div>
         <p class="duel-hint">点击卡片选出胜者。快捷键 1 选左边，2 选右边。</p>
       </div>
+      <p class="wordmark duel-brand" aria-hidden="true"><b>MOVIECUP</b><i>.APP</i></p>
     </section>
   `;
 }
@@ -693,8 +682,7 @@ function tplDuelCard(movie, side) {
       </div>
       <div class="meta">
         <div class="tname">${escapeHtml(movie.title)}</div>
-        <div class="talbum">${escapeHtml(movie.director)} · ${movie.year}</div>
-        <div class="movie-extra">${escapeHtml(movie.region)} · ${escapeHtml(movie.genre)} · 评分 ${movie.rating}</div>
+        <div class="talbum">${movieMeta(movie)}</div>
       </div>
     </article>
   `;
@@ -712,51 +700,41 @@ function tplDone() {
 
   return `
     <section class="screen with-topbar champ">
-      <div class="champ-hero">
-        <div class="champ-poster"><img src="${buildPoster(champion, "冠军")}" alt="${escapeHtml(champion.title)} 冠军海报"></div>
-        <div class="champ-copy">
-          <div class="champ-crown">👑</div>
-          <div class="champ-label">MOVIE CUP WINNER</div>
-          <h1 class="champ-title">${escapeHtml(champion.title)}</h1>
-          <p class="champ-meta">${escapeHtml(champion.director)} · ${champion.year} · ${escapeHtml(champion.region)} · ${escapeHtml(champion.genre)}</p>
-          <p class="helper champ-note">${escapeHtml(champion.vibe)}</p>
-        </div>
+      <div style="flex:1;max-height:34px"></div>
+      <div class="wordmark champ-brand" aria-hidden="true"><b>MOVIECUP</b><i>.APP</i></div>
+      <div class="champ-label en">C H A M P I O N</div>
+      <div class="champ-art-wrap">
+        ${posterImage(champion, { eager: true })}
       </div>
-      <div class="result-sheet">
-        <div class="result-row is-champion">
-          <span class="result-rank">冠军</span>
-          <strong class="result-name">${escapeHtml(champion.title)}</strong>
-          <span class="result-meta">${escapeHtml(champion.director)} · ${champion.year}</span>
-        </div>
-        <div class="result-row">
-          <span class="result-rank">亚军</span>
-          <strong class="result-name">${escapeHtml(runnerUp.title)}</strong>
-          <span class="result-meta">${escapeHtml(runnerUp.director)} · ${runnerUp.year}</span>
-        </div>
-      </div>
+      <h1 class="champ-title">${escapeHtml(champion.title)}</h1>
+      <p class="champ-album">${movieMeta(champion, true)}</p>
       <div class="podium">
-        ${tplPod(runnerUp, "亚军 · RUNNER-UP")}
+        ${tplPod(runnerUp, "亚军 · RUNNER-UP", "silver")}
         ${semifinalists.map((movie) => tplPod(movie, "四强 · SEMI")).join("")}
       </div>
       <div class="champ-actions">
-        <button class="btn" data-act="share" type="button">${ICONS.share}生成对阵图</button>
-        <button class="ghost-btn" data-act="restart-yes" type="button">${ICONS.restart}再来一场</button>
+        <button class="btn primary" data-act="share" type="button">${ICONS.share}分享我的对阵图</button>
+        <div class="champ-more">
+          <button class="btn ghost" data-act="restart-yes" type="button">${ICONS.restart}<span>再来一场</span></button>
+          <button class="btn ghost" data-act="start-default" type="button">🎬<span>再开新赛事</span></button>
+        </div>
       </div>
     </section>
   `;
 }
 
-function tplPod(movie, label) {
+function tplPod(movie, label, cls = "") {
   if (!movie) {
     return "";
   }
   return `
-    <div class="pod">
-      ${posterImage(movie)}
+    <div class="pod ${cls}">
+      <div class="pod-art">
+        ${posterImage(movie)}
+      </div>
       <div class="pod-meta">
         <div class="pod-rank">${escapeHtml(label)}</div>
         <div class="pod-name">${escapeHtml(movie.title)}</div>
-        <div class="movie-extra">${escapeHtml(movie.director)}</div>
       </div>
     </div>
   `;
@@ -1646,6 +1624,14 @@ function posterSrc(movie) {
 function posterImage(movie, options = {}) {
   const loading = options.eager ? "eager" : "lazy";
   return `<img src="${posterSrc(movie)}" data-fallback-src="${buildPoster(movie)}" alt="${escapeHtml(movie.title)} 海报" loading="${loading}">`;
+}
+
+function movieMeta(movie, includeGenre = false) {
+  const parts = [movie.director, movie.year, movie.region];
+  if (includeGenre) {
+    parts.push(movie.genre);
+  }
+  return escapeHtml(parts.filter(Boolean).join(" · "));
 }
 
 function getCatalog() {
