@@ -1084,7 +1084,12 @@ img {
 }
 
 .scard .art::before,
-.wcard .art::before,
+.wcard .art::before {
+  content: "";
+  display: block;
+  padding-top: 132%;
+}
+
 .dcard .art::before {
   content: "";
   display: block;
@@ -1106,6 +1111,10 @@ img {
 .meta,
 .pod-meta {
   padding: 12px 13px 15px;
+}
+
+.meta-compact {
+  padding-top: 10px;
 }
 
 .tname,
@@ -1143,32 +1152,83 @@ img {
   line-height: 1.5;
 }
 
-.check,
-.gbadge {
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.tag-chip,
+.rating-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  line-height: 1;
+}
+
+.tag-chip {
+  color: var(--dim);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rating-chip {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.92), rgba(220, 88, 196, 0.88));
+  box-shadow: 0 8px 20px -12px rgba(180, 96, 255, 0.72);
+}
+
+.card-topline {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.art-fade {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(7, 8, 12, 0.78), transparent);
+  pointer-events: none;
+}
+
+.check {
   position: absolute;
   display: inline-grid;
   place-items: center;
 }
 
 .check {
-  width: 24px;
-  height: 24px;
-  right: 6px;
-  top: 6px;
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  right: 8px;
+  bottom: 8px;
   border-radius: 999px;
-  background: rgba(8, 8, 13, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 8, 13, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   opacity: 0;
   transform: scale(0.8);
   transition: 0.18s ease;
 }
 
 .gbadge {
-  left: 6px;
-  top: 6px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
   border-radius: 7px;
   background: rgba(12, 12, 18, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1178,19 +1238,25 @@ img {
 
 .scard .check,
 .wcard .check {
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .scard.picked,
 .wcard.picked {
   border-color: transparent;
-  box-shadow: 0 0 0 2px var(--acc-1), 0 12px 30px -12px var(--acc-soft);
+  background: linear-gradient(var(--panel), var(--panel)) padding-box, linear-gradient(135deg, var(--acc-1), var(--acc-2)) border-box;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 18px 38px -16px var(--acc-soft);
 }
 
 .scard.picked .check,
 .wcard.picked .check {
   opacity: 1;
   transform: scale(1);
+}
+
+.scard.picked .rating-chip,
+.wcard.picked .rating-chip {
+  box-shadow: 0 12px 26px -12px rgba(215, 102, 255, 0.88);
 }
 
 .cta-bar {

@@ -600,11 +600,18 @@ function tplGroup() {
             <article class="scard ${state.sel.includes(movieId) ? "picked" : ""}" data-act="toggle-pick" data-movie-id="${movieId}" role="button" tabindex="0" style="animation-delay:${index * 70}ms">
               <div class="art">
                 ${posterImage(movie)}
+                <div class="art-fade"></div>
+                <div class="card-topline">
+                  <span class="rating-chip">豆瓣 ${formatRating(movie.rating)}</span>
+                </div>
                 <div class="check">✓</div>
               </div>
               <div class="meta">
                 <div class="tname">${escapeHtml(movie.title)}</div>
                 <div class="talbum">${movieMeta(movie)}</div>
+                <div class="card-tags">
+                  ${selectionTags(movie)}
+                </div>
               </div>
             </article>
           `;
@@ -633,10 +640,20 @@ function tplWildcard() {
             <article class="wcard ${state.sel.includes(movieId) ? "picked" : ""}" data-act="toggle-wild" data-movie-id="${movieId}" role="button" tabindex="0" style="animation-delay:${Math.min(index * 30, 500)}ms">
               <div class="art">
                 ${posterImage(movie)}
-                <span class="gbadge">${groupLabel(groupIndex)}</span>
+                <div class="art-fade"></div>
+                <div class="card-topline">
+                  <span class="gbadge">${groupLabel(groupIndex)}</span>
+                  <span class="rating-chip">豆瓣 ${formatRating(movie.rating)}</span>
+                </div>
                 <div class="check">✓</div>
               </div>
-              <div class="wname">${escapeHtml(movie.title)}</div>
+              <div class="meta meta-compact">
+                <div class="wname">${escapeHtml(movie.title)}</div>
+                <div class="talbum">${movieMeta(movie)}</div>
+                <div class="card-tags">
+                  ${selectionTags(movie)}
+                </div>
+              </div>
             </article>
           `;
         }).join("")}
@@ -1632,6 +1649,22 @@ function movieMeta(movie, includeGenre = false) {
     parts.push(movie.genre);
   }
   return escapeHtml(parts.filter(Boolean).join(" · "));
+}
+
+function formatRating(rating) {
+  const value = Number(rating);
+  if (!Number.isFinite(value)) {
+    return "--";
+  }
+  return (value / 10).toFixed(1);
+}
+
+function selectionTags(movie) {
+  return [movie.genre, movie.year ? `${movie.year}年` : "", movie.region]
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((label) => `<span class="tag-chip">${escapeHtml(label)}</span>`)
+    .join("");
 }
 
 function getCatalog() {
